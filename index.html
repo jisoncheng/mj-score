@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>麻將戰績紀錄表</title>
+    <title>麻將戰績紀錄表 Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -16,26 +16,13 @@
             --border: #333;
         }
         body { 
-            font-family: "Microsoft JhengHei", "PingFang TC", sans-serif; 
-            background: var(--bg-dark); 
-            color: var(--text-main); 
-            margin: 0; 
-            display: flex; 
-            justify-content: center; 
+            font-family: "Microsoft JhengHei", sans-serif; 
+            background: var(--bg-dark); color: var(--text-main); 
+            margin: 0; display: flex; justify-content: center; 
         }
-        
-        .container { 
-            width: 100vw; 
-            max-width: 500px; 
-            min-height: 100vh; 
-            padding: 15px; 
-            box-sizing: border-box; 
-        }
-        
+        .container { width: 100vw; max-width: 500px; min-height: 100vh; padding: 15px; box-sizing: border-box; }
         h2 { color: var(--accent-gold); text-align: center; }
         .hidden { display: none; }
-        
-        /* 表單樣式 */
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
         input { 
@@ -43,7 +30,6 @@
             border-radius: 5px; background: #222; color: white; 
             box-sizing: border-box; font-size: 16px !important; 
         }
-        
         .flex-row { display: flex; gap: 8px; }
         button { 
             width: 100%; padding: 12px; border: none; border-radius: 5px; 
@@ -52,32 +38,22 @@
         .btn-main { background: var(--accent-gold); color: black; }
         .btn-add { background: var(--accent-green); color: white; margin-bottom: 20px; }
         .btn-cancel { background: #444; color: white; }
-        .btn-logout { background: transparent; color: #888; border: 1px solid #444; margin-top: 30px; font-size: 12px; }
+        .btn-logout { background: transparent; color: #888; border: 1px solid #444; margin-top: 10px; font-size: 12px; }
+        .btn-data { background: #34495e; color: white; font-size: 14px; margin-top: 10px; }
 
-        .remember-me { 
-            display: flex; align-items: center; gap: 8px; font-size: 14px; 
-            color: #aaa; margin-top: 10px; cursor: pointer; 
-        }
-        .remember-me input { width: auto; height: auto; margin: 0; }
-
-        /* 儀表板樣式 */
         .total-box { border: 1px solid var(--accent-gold); padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
         .chart-container { background: #1a1a1a; padding: 10px; border-radius: 8px; margin-bottom: 20px; height: 180px; }
-
-        /* 紀錄卡片 */
         .record-card { border-bottom: 1px solid var(--border); padding: 15px 5px; position: relative; }
         .row-1 { font-size: 13px; color: #aaa; margin-bottom: 5px; display: flex; justify-content: space-between; }
         .row-2 { font-size: 15px; margin-bottom: 5px; }
         .row-3 { display: flex; justify-content: space-between; align-items: flex-end; font-size: 14px; }
-        
         .amount { font-size: 17px; font-weight: bold; }
         .plus { color: var(--accent-green); }
         .minus { color: var(--accent-red); }
-        .na-text { color: #555; text-decoration: line-through; }
-
         .action-btns { display: flex; gap: 10px; }
         .btn-edit { color: #3498db; cursor: pointer; }
         .btn-del { color: var(--accent-red); cursor: pointer; }
+        .na-text { color: #555; text-decoration: line-through; }
     </style>
 </head>
 <body>
@@ -85,17 +61,8 @@
 <div class="container">
     <div id="auth-section">
         <h2>麻將紀錄系統</h2>
-        <div class="form-group">
-            <label>帳號</label>
-            <input type="text" id="username" placeholder="請輸入帳號">
-        </div>
-        <div class="form-group">
-            <label>密碼 (5碼以上)</label>
-            <input type="password" id="password" placeholder="請輸入密碼">
-        </div>
-        <label class="remember-me">
-            <input type="checkbox" id="remember-checkbox"> 記住帳號密碼
-        </label>
+        <div class="form-group"><label>帳號</label><input type="text" id="username"></div>
+        <div class="form-group"><label>密碼 (5碼以上)</label><input type="password" id="password"></div>
         <button class="btn-main" onclick="handleAuth()">進入系統</button>
     </div>
 
@@ -104,13 +71,16 @@
         <div class="total-box">
             <div style="color: #aaa; font-size: 13px;">生涯總累積</div>
             <div id="grand-total" style="font-size: 26px; font-weight: bold; margin-bottom: 10px;">$ 0</div>
-            <div class="chart-container">
-                <canvas id="scoreChart"></canvas>
-            </div>
+            <div class="chart-container"><canvas id="scoreChart"></canvas></div>
         </div>
         <button class="btn-add" onclick="openForm()">+ 新增紀錄</button>
         <div id="history-list"></div>
-        <button class="btn-logout" onclick="logout()">登出帳號</button>
+        
+        <div style="margin-top: 30px; border-top: 1px solid #333; padding-top: 10px;">
+            <button class="btn-data" onclick="exportData()">💾 複製備份數據 (傳送到手機)</button>
+            <button class="btn-data" onclick="importData()">📂 還原/匯入數據</button>
+            <button class="btn-logout" onclick="logout()">登出帳號</button>
+        </div>
     </div>
 
     <div id="record-form-section" class="hidden">
@@ -130,7 +100,7 @@
             <div class="form-group" style="flex:1"><label>放槍</label><input type="text" id="lose-count"></div>
             <div class="form-group" style="flex:1"><label>自摸</label><input type="text" id="draw-count"></div>
         </div>
-        <div class="form-group"><label>最終輸贏金額</label><input type="number" id="final-amount"></div>
+        <div class="form-group"><label>最終金額</label><input type="number" id="final-amount"></div>
         <button class="btn-add" onclick="saveRecord()">確認儲存</button>
         <button class="btn-cancel" onclick="showSection('dashboard-section')">取消</button>
     </div>
@@ -140,15 +110,6 @@
     let currentUser = null;
     let scoreChart = null;
 
-    window.onload = function() {
-        const savedAuth = JSON.parse(localStorage.getItem('mj_remembered') || 'null');
-        if (savedAuth) {
-            document.getElementById('username').value = savedAuth.user;
-            document.getElementById('password').value = savedAuth.pass;
-            document.getElementById('remember-checkbox').checked = true;
-        }
-    };
-
     function showSection(id) {
         document.querySelectorAll('.container > div').forEach(div => div.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
@@ -157,55 +118,54 @@
     function handleAuth() {
         const user = document.getElementById('username').value.trim();
         const pass = document.getElementById('password').value;
-        const remember = document.getElementById('remember-checkbox').checked;
-
-        if (!user || pass.length < 5) return alert('請輸入帳號且密碼需滿5碼');
+        if (!user || pass.length < 5) return alert('請檢查帳號密碼');
         let accounts = JSON.parse(localStorage.getItem('mj_accounts') || '{}');
-        
         if (!accounts[user]) {
             accounts[user] = pass;
             localStorage.setItem('mj_accounts', JSON.stringify(accounts));
-            alert('帳號註冊成功！');
-        } else if (accounts[user] !== pass) {
-            return alert('密碼錯誤！');
-        }
-
-        if (remember) localStorage.setItem('mj_remembered', JSON.stringify({ user, pass }));
-        else localStorage.removeItem('mj_remembered');
-
+        } else if (accounts[user] !== pass) return alert('密碼錯誤');
         currentUser = user;
-        document.getElementById('welcome-msg').innerText = `${user}的麻將紀錄`;
         showSection('dashboard-section');
         loadRecords();
     }
 
-    function logout() {
-        currentUser = null;
-        document.getElementById('password').value = '';
-        showSection('auth-section');
+    function logout() { currentUser = null; showSection('auth-section'); }
+
+    // 備份功能：將該帳號的所有資料轉成 Base64 字串並複製
+    function exportData() {
+        const allData = JSON.parse(localStorage.getItem('mj_data') || '{}');
+        const userData = allData[currentUser] || [];
+        if (userData.length === 0) return alert('目前沒有數據可以備份');
+        
+        const dataStr = JSON.stringify(userData);
+        const encodedData = btoa(unescape(encodeURIComponent(dataStr))); // 編碼避免亂碼
+        
+        navigator.clipboard.writeText(encodedData).then(() => {
+            alert('數據已複製到剪貼簿！請將代碼貼到 Line 或記事本保存。');
+        }).catch(err => {
+            alert('複製失敗，請手動選取：' + encodedData);
+        });
     }
 
-    function openForm(editIndex = -1) {
-        const allData = JSON.parse(localStorage.getItem('mj_data') || '{}');
-        const myRecords = allData[currentUser] || [];
-        document.getElementById('edit-index').value = editIndex;
-        document.getElementById('form-title').innerText = editIndex === -1 ? "新增對局" : "編輯紀錄";
+    // 匯入功能：讀取代碼並存入
+    function importData() {
+        const code = prompt('請貼上備份數據代碼：');
+        if (!code) return;
+        try {
+            const decodedData = decodeURIComponent(escape(atob(code)));
+            const importedRecords = JSON.parse(decodedData);
+            if (!Array.isArray(importedRecords)) throw new Error();
 
-        if (editIndex !== -1) {
-            const r = myRecords[editIndex];
-            document.getElementById('play-date').value = r.date;
-            document.getElementById('p-up').value = r.pUp;
-            document.getElementById('p-mid').value = r.pMid;
-            document.getElementById('p-down').value = r.pDown;
-            document.getElementById('win-count').value = r.win;
-            document.getElementById('lose-count').value = r.lose;
-            document.getElementById('draw-count').value = r.draw;
-            document.getElementById('final-amount').value = r.amount;
-        } else {
-            clearForm();
-            document.getElementById('play-date').value = new Date().toISOString().split('T')[0];
+            if (confirm('匯入後將會覆蓋目前帳號的所有紀錄，確定嗎？')) {
+                let allData = JSON.parse(localStorage.getItem('mj_data') || '{}');
+                allData[currentUser] = importedRecords;
+                localStorage.setItem('mj_data', JSON.stringify(allData));
+                loadRecords();
+                alert('還原成功！');
+            }
+        } catch (e) {
+            alert('無效的代碼，還原失敗。');
         }
-        showSection('record-form-section');
     }
 
     function saveRecord() {
@@ -220,30 +180,42 @@
             draw: document.getElementById('draw-count').value || "0",
             amount: parseInt(document.getElementById('final-amount').value) || 0
         };
-
         let allData = JSON.parse(localStorage.getItem('mj_data') || '{}');
         if (!allData[currentUser]) allData[currentUser] = [];
-
         if (editIndex === -1) allData[currentUser].push(record);
         else allData[currentUser][editIndex] = record;
-
         localStorage.setItem('mj_data', JSON.stringify(allData));
         showSection('dashboard-section');
         loadRecords();
     }
 
     function deleteRecord(index) {
-        if (!confirm('確定要刪除這筆紀錄嗎？')) return;
+        if (!confirm('確定刪除？')) return;
         let allData = JSON.parse(localStorage.getItem('mj_data') || '{}');
         allData[currentUser].splice(index, 1);
         localStorage.setItem('mj_data', JSON.stringify(allData));
         loadRecords();
     }
 
-    function clearForm() {
-        ['p-up', 'p-mid', 'p-down', 'win-count', 'lose-count', 'draw-count', 'final-amount'].forEach(id => {
-            document.getElementById(id).value = '';
-        });
+    function openForm(editIndex = -1) {
+        const allData = JSON.parse(localStorage.getItem('mj_data') || '{}');
+        const myRecords = allData[currentUser] || [];
+        document.getElementById('edit-index').value = editIndex;
+        if (editIndex !== -1) {
+            const r = myRecords[editIndex];
+            document.getElementById('play-date').value = r.date;
+            document.getElementById('p-up').value = r.pUp;
+            document.getElementById('p-mid').value = r.pMid;
+            document.getElementById('p-down').value = r.pDown;
+            document.getElementById('win-count').value = r.win;
+            document.getElementById('lose-count').value = r.lose;
+            document.getElementById('draw-count').value = r.draw;
+            document.getElementById('final-amount').value = r.amount;
+        } else {
+            document.getElementById('play-date').value = new Date().toISOString().split('T')[0];
+            ['p-up', 'p-mid', 'p-down', 'win-count', 'lose-count', 'draw-count', 'final-amount'].forEach(id => document.getElementById(id).value = '');
+        }
+        showSection('record-form-section');
     }
 
     function updateChart(recentRecords) {
@@ -251,28 +223,12 @@
         const labels = recentRecords.map((_, i) => i + 1);
         const dataValues = recentRecords.map(r => r.amount);
         const barColors = dataValues.map(v => v >= 0 ? '#2ecc71' : '#e74c3c');
-
         if (scoreChart) scoreChart.destroy();
-
         scoreChart = new Chart(ctx, {
             type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: '輸贏金額',
-                    data: dataValues,
-                    backgroundColor: barColors,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: '#333' }, ticks: { color: '#888', font: { size: 10 } } },
-                    x: { grid: { display: false }, ticks: { color: '#888', font: { size: 10 } } }
-                }
+            data: { labels, datasets: [{ data: dataValues, backgroundColor: barColors, borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                scales: { y: { grid: { color: '#333' } }, x: { grid: { display: false } } }
             }
         });
     }
@@ -282,40 +238,19 @@
         const myRecords = allData[currentUser] || [];
         const listContainer = document.getElementById('history-list');
         const totalDisplay = document.getElementById('grand-total');
-        
-        listContainer.innerHTML = '';
         let totalSum = 0;
-
-        // 計算總分
         myRecords.forEach(r => totalSum += r.amount);
         totalDisplay.innerText = `$ ${totalSum}`;
         totalDisplay.className = `amount ${totalSum >= 0 ? 'plus' : 'minus'}`;
-
-        // 準備近 20 筆圖表數據 (時間正序)
-        const recentForChart = [...myRecords].sort((a,b) => new Date(a.date) - new Date(b.date)).slice(-20);
-        updateChart(recentForChart);
-
-        // 顯示列表 (時間倒序)
-        const sortedRecords = myRecords.map((r, i) => ({...r, originalIndex: i}))
-                                     .sort((a,b) => new Date(b.date) - new Date(a.date));
-
-        sortedRecords.forEach(r => {
+        updateChart([...myRecords].sort((a,b) => new Date(a.date) - new Date(b.date)).slice(-20));
+        listContainer.innerHTML = '';
+        myRecords.map((r, i) => ({...r, originalIndex: i})).sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(r => {
             const card = document.createElement('div');
             card.className = 'record-card';
-            const formatVal = (v) => (v && v.toString().toLowerCase() === 'x') ? '<span class="na-text">X</span>' : v;
             card.innerHTML = `
-                <div class="row-1">
-                    <span>${r.date}</span>
-                    <div class="action-btns">
-                        <span class="btn-edit" onclick="openForm(${r.originalIndex})">編輯</span>
-                        <span class="btn-del" onclick="deleteRecord(${r.originalIndex})">刪除</span>
-                    </div>
-                </div>
+                <div class="row-1"><span>${r.date}</span><div class="action-btns"><span class="btn-edit" onclick="openForm(${r.originalIndex})">編輯</span><span class="btn-del" onclick="deleteRecord(${r.originalIndex})">刪除</span></div></div>
                 <div class="row-2">上: ${r.pUp} | 對: ${r.pMid} | 下: ${r.pDown}</div>
-                <div class="row-3">
-                    <div>胡: ${formatVal(r.win)} | 放: ${formatVal(r.lose)} | 摸: ${formatVal(r.draw)}</div>
-                    <div class="amount ${r.amount >= 0 ? 'plus' : 'minus'}">輸贏結果 ${r.amount >= 0 ? '+' : ''}${r.amount}</div>
-                </div>`;
+                <div class="row-3"><div>胡: ${r.win} | 放: ${r.lose} | 摸: ${r.draw}</div><div class="amount ${r.amount >= 0 ? 'plus' : 'minus'}">${r.amount >= 0 ? '+' : ''}${r.amount}</div></div>`;
             listContainer.appendChild(card);
         });
     }
